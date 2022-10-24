@@ -1,0 +1,30 @@
+{
+  "name": "personal-site-2",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "develop": "lerna run dev --parallel",
+    "dev": "lerna run dev --parallel",
+    "dev-backend": "cd backend/app && npm run dev",
+    "postinstall": "lerna bootstrap",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rawestmoreland/personal-site-2.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rawestmoreland/personal-site-2/issues"
+  },
+  "homepage": "https://github.com/rawestmoreland/personal-site-2#readme",
+  "workspaces": [
+    "packages/*"
+  ],
+  "devDependencies": {
+    "lerna": "^6.0.1"
+  }
+}

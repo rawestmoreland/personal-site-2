@@ -1,0 +1,10 @@
+version: '3'
+
+services:
+  pocketbase:
+    container_name: pocketbase
+    image: rawestmoreland/pocketbase:latest
+    volumes:
+      - './backend/data:/app/pb_data'
+    ports:
+      - '8090:8090'
