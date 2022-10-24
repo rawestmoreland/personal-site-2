@@ -1,25 +1,23 @@
-FROM alpine:3 as downloader
+# syntax=docker/dockerfile:1
 
-ARG TARGETOS
-ARG TARGETARCH
-ARG VERSION=0.7.9
+FROM alpine:3.6
 
-ENV BUILDX_ARCH="${TARGETOS:-linux}_${TARGETARCH:-amd64}"
+# You can change Pocketbase version here
+ARG POCKETBASE_VERSION=0.5.2
 
+# Install the dependencies
 RUN apk add --no-cache \
-  ca-certificates \
-  unzip \
-  wget \
-  zip \
-  zlib-dev
+    ca-certificates \
+    unzip \
+    wget \
+    zip \
+    zlib-dev \
+    bash
 
-RUN wget https://github.com/pocketbase/pocketbase/releases/download/v${VERSION}/pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
-  && unzip pocketbase_${VERSION}_${BUILDX_ARCH}.zip \
-  && chmod +x /pocketbase
+# Download Pocketbase
+ADD https://github.com/pocketbase/pocketbase/releases/download/v${POCKETBASE_VERSION}/pocketbase_${POCKETBASE_VERSION}_linux_amd64.zip /tmp/pocketbase.zip
+RUN unzip /tmp/pocketbase.zip -d /app
+RUN chmod +x /app/pocketbase
 
-FROM scratch
-
-EXPOSE 8090
-
-COPY --from=downloader /pocketbase /usr/local/bin/pocketbase
-CMD ["/usr/local/bin/pocketbase", "serve", "--http=0.0.0.0:8090"]
+# Start Pocketbase
+CMD [ "/app/pocketbase", "serve", "--http=0.0.0.0:5000" ]
