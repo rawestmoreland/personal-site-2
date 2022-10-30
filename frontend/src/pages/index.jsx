@@ -276,7 +276,7 @@ export default function Home({ articles, jobs }) {
           <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
             <div className="flex flex-col gap-16">
               {articles.map((article) => (
-                <Article article={article} />
+                <Article key={`article-${article.id}`} article={article} />
               ))}
             </div>
             <div className="space-y-10 lg:pl-16 xl:pl-24">
@@ -290,10 +290,6 @@ export default function Home({ articles, jobs }) {
 }
 
 export async function getStaticProps() {
-  if (process.env.NODE_ENV === 'production') {
-    await generateRssFeed()
-  }
-
   const articles = await fetch('https://admin.ilearnedathing.com/api/posts', {
     headers: { 'Content-type': 'application/json' },
   }).then((data) => data.json())

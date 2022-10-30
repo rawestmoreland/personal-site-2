@@ -1,9 +1,22 @@
+import { useRouter } from 'next/router'
+import Error from 'next/error'
 import { ArticleLayout } from '@/components/ArticleLayout'
 import Markdown from '@/components/Markdown'
 import { fetchStrapi } from 'util/api'
-import rehypeRaw from 'rehype-raw'
 
 export default function ArticlePage({ article }) {
+  const router = useRouter()
+
+  // Check if the required data was provided
+  if (!router.isFallback && !article) {
+    return <Error statusCode={404} />
+  }
+
+  // Loading screen (only possible in preview mode)
+  if (router.isFallback) {
+    return <div className="container">Loading...</div>
+  }
+
   const { title, description, publishedAt, content } = article.attributes
   const { name } = article.attributes.authors.data[0].attributes
   const meta = {
@@ -15,7 +28,7 @@ export default function ArticlePage({ article }) {
   return (
     <div>
       <ArticleLayout meta={meta}>
-        <Markdown children={content} />
+        <Markdown content={content} />
       </ArticleLayout>
     </div>
   )

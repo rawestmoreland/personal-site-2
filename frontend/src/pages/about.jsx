@@ -65,11 +65,11 @@ export default function About({ content }) {
           </div>
           <div className="lg:order-first lg:row-span-2">
             <Prose>
-              <Markdown children={content.title} />
+              <Markdown content={content.title} />
             </Prose>
             <div className="mt-6 space-y-7 text-base text-zinc-600 dark:text-zinc-400">
               <Prose>
-                <Markdown children={content.bio} />
+                <Markdown content={content.bio} />
               </Prose>
             </div>
           </div>
