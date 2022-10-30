@@ -1,5 +1,4 @@
 [build]
 	base = "frontend/"
 	publish = ".next"
-	command = "yarn build"
-  ignore = "/bin/false"
+	command = "next build"
