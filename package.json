@@ -6,6 +6,7 @@
   "scripts": {
     "develop": "lerna run dev --parallel",
     "dev": "lerna run dev --parallel",
+    "dev-frontend": "cd frontend && yarn dev",
     "dev-backend": "cd backend/app && npm run dev",
     "postinstall": "lerna bootstrap",
     "test": "echo \"Error: no test specified\" && exit 1"

@@ -6,25 +6,17 @@ import clsx from 'clsx'
 import { Button } from '@/components/Button'
 import { Card } from '@/components/Card'
 import { Container } from '@/components/Container'
-import {
-  TwitterIcon,
-  InstagramIcon,
-  GitHubIcon,
-  LinkedInIcon,
-} from '@/components/SocialIcons'
+import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons'
 import image1 from '@/images/photos/image-1.jpg'
 import image2 from '@/images/photos/nextjs-logo.png'
 import image3 from '@/images/photos/new-zealand.jpg'
 import image4 from '@/images/photos/strapi.jpg'
 import image5 from '@/images/photos/tanabe.jpg'
-import logoSkywest from '@/images/logos/skywest.svg'
-import logoFlightaware from '@/images/logos/flightaware.svg'
-import logoDronedeploy from '@/images/logos/dronedeploy.png'
-import logoScf from '@/images/logos/scf.png'
-import { generateRssFeed } from '@/lib/generateRssFeed'
-import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
 import { RESUME_DOWNLOAD } from '@/lib/constants'
+import { fetchAPI } from 'util/api'
+import { getPocketbaseMedia } from 'util/media'
+import { format } from 'date-fns'
 
 function MailIcon(props) {
   return (
@@ -86,15 +78,14 @@ function ArrowDownIcon(props) {
 }
 
 function Article({ article }) {
+  const { description, title, publishedAt, slug } = article.attributes
   return (
     <Card as="article">
-      <Card.Title href={`/articles/${article.slug}`}>
-        {article.title}
-      </Card.Title>
-      <Card.Eyebrow as="time" dateTime={article.date} decorate>
-        {formatDate(article.date)}
+      <Card.Title href={`/articles/${slug}`}>{title}</Card.Title>
+      <Card.Eyebrow as="time" dateTime={publishedAt} decorate>
+        {formatDate(publishedAt)}
       </Card.Eyebrow>
-      <Card.Description>{article.description}</Card.Description>
+      <Card.Description>{description}</Card.Description>
       <Card.Cta>Read article</Card.Cta>
     </Card>
   )
@@ -137,41 +128,7 @@ function Newsletter() {
   )
 }
 
-function Resume() {
-  let resume = [
-    {
-      company: "Scott's Cheap Flights",
-      title: 'Software Engineer',
-      logo: logoScf,
-      start: '2022',
-      end: {
-        label: 'Present',
-        dateTime: new Date().getFullYear(),
-      },
-    },
-    {
-      company: 'DroneDeploy',
-      title: 'Software Engineer',
-      logo: logoDronedeploy,
-      start: 'Jan 2022',
-      end: 'Jun 2022',
-    },
-    {
-      company: 'FlightAware',
-      title: 'Software Engineer',
-      logo: logoFlightaware,
-      start: 'Feb 2020',
-      end: 'Dec 2021',
-    },
-    {
-      company: 'SkyWest Airlines',
-      title: 'Captain',
-      logo: logoSkywest,
-      start: '2014',
-      end: '2019',
-    },
-  ]
-
+function Resume({ jobs }) {
   return (
     <div className="rounded-2xl border border-zinc-100 p-6 dark:border-zinc-700/40">
       <h2 className="flex text-sm font-semibold text-zinc-900 dark:text-zinc-100">
@@ -179,10 +136,21 @@ function Resume() {
         <span className="ml-3">Work</span>
       </h2>
       <ol className="mt-6 space-y-4">
-        {resume.map((role, roleIndex) => (
+        {jobs.map((role, roleIndex) => (
           <li key={roleIndex} className="flex gap-4">
             <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-              <Image src={role.logo} alt="" className="h-7 w-7" unoptimized />
+              <Image
+                src={getPocketbaseMedia(
+                  role['@collectionName'],
+                  role.id,
+                  role.logo
+                )}
+                alt=""
+                className="h-7 w-7"
+                unoptimized
+                height={60}
+                width={60}
+              />
             </div>
             <dl className="flex flex-auto flex-wrap gap-x-2">
               <dt className="sr-only">Company</dt>
@@ -196,16 +164,23 @@ function Resume() {
               <dt className="sr-only">Date</dt>
               <dd
                 className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
-                aria-label={`${role.start.label ?? role.start} until ${
-                  role.end.label ?? role.end
+                aria-label={`${format(
+                  new Date(role.start),
+                  'LLL yyyy'
+                )} until ${
+                  role.currently_employed
+                    ? 'present'
+                    : format(new Date(role.end), 'LLL yyyy')
                 }`}
               >
-                <time dateTime={role.start.dateTime ?? role.start}>
-                  {role.start.label ?? role.start}
+                <time dateTime={role.start}>
+                  {format(new Date(role.start), 'LLL yyyy')}
                 </time>{' '}
                 <span aria-hidden="true">—</span>{' '}
-                <time dateTime={role.end.dateTime ?? role.end}>
-                  {role.end.label ?? role.end}
+                <time dateTime={role.end}>
+                  {role.currently_employed
+                    ? 'present'
+                    : format(new Date(role.end), 'LLL yyyy')}
                 </time>
               </dd>
             </dl>
@@ -255,7 +230,7 @@ function Photos() {
   )
 }
 
-export default function Home({ articles }) {
+export default function Home({ articles, jobs }) {
   return (
     <>
       <Head>
@@ -282,16 +257,6 @@ export default function Home({ articles }) {
             amazing people, I&apos;m traveling and experiencing the world.
           </p>
           <div className="mt-6 flex gap-6">
-            {/* <SocialLink
-              href="https://twitter.com"
-              aria-label="Follow on Twitter"
-              icon={TwitterIcon}
-            />
-            <SocialLink
-              href="https://instagram.com"
-              aria-label="Follow on Instagram"
-              icon={InstagramIcon}
-            /> */}
             <SocialLink
               href="https://github.com/rawestmoreland"
               aria-label="Follow on GitHub"
@@ -306,19 +271,20 @@ export default function Home({ articles }) {
         </div>
       </Container>
       <Photos />
-      <Container className="mt-24 md:mt-28">
-        <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
-          <div className="flex flex-col gap-16">
-            {articles.map((article) => (
-              <Article key={article.slug} article={article} />
-            ))}
+      {articles && (
+        <Container className="mt-24 md:mt-28">
+          <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
+            <div className="flex flex-col gap-16">
+              {articles.map((article) => (
+                <Article article={article} />
+              ))}
+            </div>
+            <div className="space-y-10 lg:pl-16 xl:pl-24">
+              <Resume jobs={jobs} />
+            </div>
           </div>
-          <div className="space-y-10 lg:pl-16 xl:pl-24">
-            <Newsletter />
-            <Resume />
-          </div>
-        </div>
-      </Container>
+        </Container>
+      )}
     </>
   )
 }
@@ -328,11 +294,16 @@ export async function getStaticProps() {
     await generateRssFeed()
   }
 
+  const articles = await fetch('https://admin.ilearnedathing.com/api/posts', {
+    headers: { 'Content-type': 'application/json' },
+  }).then((data) => data.json())
+
+  const jobs = await fetchAPI({ path: '/collections/jobs/records?sort=-start' })
+
   return {
     props: {
-      articles: (await getAllArticles())
-        .slice(0, 4)
-        .map(({ component, ...meta }) => meta),
+      articles: articles.data,
+      jobs: jobs.items,
     },
   }
 }

@@ -1,2 +1,4 @@
 node_modules/
 /backend/data
+# Local Netlify folder
+.netlify

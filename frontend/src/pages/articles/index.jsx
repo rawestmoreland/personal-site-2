@@ -2,8 +2,8 @@ import Head from 'next/head'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
-import { getAllArticles } from '@/lib/getAllArticles'
 import { formatDate } from '@/lib/formatDate'
+import { fetchStrapi } from 'util/api'
 
 function Article({ article }) {
   return (
@@ -14,7 +14,7 @@ function Article({ article }) {
         </Card.Title>
         <Card.Eyebrow
           as="time"
-          dateTime={article.date}
+          dateTime={article.publishedAt}
           className="md:hidden"
           decorate
         >
@@ -25,10 +25,10 @@ function Article({ article }) {
       </Card>
       <Card.Eyebrow
         as="time"
-        dateTime={article.date}
+        dateTime={article.publishedAt}
         className="mt-1 hidden md:block"
       >
-        {formatDate(article.date)}
+        {formatDate(article.publishedAt)}
       </Card.Eyebrow>
     </article>
   )
@@ -51,7 +51,10 @@ export default function ArticlesIndex({ articles }) {
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
             {articles.map((article) => (
-              <Article key={article.slug} article={article} />
+              <Article
+                key={article.attributes.slug}
+                article={article.attributes}
+              />
             ))}
           </div>
         </div>
@@ -61,9 +64,10 @@ export default function ArticlesIndex({ articles }) {
 }
 
 export async function getStaticProps() {
+  const { data } = await fetchStrapi('/posts')
   return {
     props: {
-      articles: (await getAllArticles()).map(({ component, ...meta }) => meta),
+      articles: data,
     },
   }
 }

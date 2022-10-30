@@ -3,40 +3,9 @@ import Head from 'next/head'
 
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
-import iLearned from '@/images/logos/ilearned.png'
-import sbb from '@/images/logos/sbb.png'
-import wiferm from '@/images/logos/wiferm.png'
-import kegTrack from '@/images/logos/kegtrack.png'
-
-const projects = [
-  {
-    name: 'I Learned a Thing',
-    description:
-      'My brain dump for things I learn. Built with NextJS and Strapi',
-    link: { href: 'https://ilearnedathing.com', label: 'ilearnedathing.com' },
-    logo: iLearned,
-  },
-  {
-    name: 'Small Batch Bru',
-    description:
-      'My homebrewing blog where I share recipes, techniques and tasting notes.',
-    link: { href: 'https://smallbatchbru.com', label: 'smallbatchbru.com' },
-    logo: sbb,
-  },
-  {
-    name: 'WiFerm',
-    description: 'A WiFi fermentation temperature controller.',
-    link: { href: 'https://wiferm.com', label: 'wiferm.com' },
-    logo: wiferm,
-  },
-  {
-    name: 'Kegtrack',
-    description:
-      'A keg volume tracking app. Using the accelerometer in your phone. Built with Flutter and Firebase',
-    link: { href: 'https://kegtrackapp.com', label: 'kegtrackapp.com' },
-    logo: kegTrack,
-  },
-]
+import { fetchAPI } from 'util/api'
+import Error from 'next/error'
+import { getPocketbaseMedia } from 'util/media'
 
 function LinkIcon(props) {
   return (
@@ -49,11 +18,16 @@ function LinkIcon(props) {
   )
 }
 
-export default function Projects() {
+export default function Projects({ errorCode, projects }) {
+  if (errorCode) {
+    return <Error statusCode={errorCode} />
+  }
+  const { items } = projects
+
   return (
     <>
       <Head>
-        <title>Projects - Spencer Sharp</title>
+        <title>Projects - Richard Westmoreland</title>
         <meta
           name="description"
           content="Things I’ve made trying to put my dent in the universe."
@@ -67,28 +41,49 @@ export default function Projects() {
           role="list"
           className="grid grid-cols-1 gap-x-12 gap-y-16 sm:grid-cols-2 lg:grid-cols-3"
         >
-          {projects.map((project) => (
-            <Card as="li" key={project.name}>
-              <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-                <Image
-                  src={project.logo}
-                  alt=""
-                  className="h-8 w-8"
-                  unoptimized
-                />
-              </div>
-              <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
-                <Card.Link href={project.link.href}>{project.name}</Card.Link>
-              </h2>
-              <Card.Description>{project.description}</Card.Description>
-              <p className="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
-                <LinkIcon className="h-6 w-6 flex-none" />
-                <span className="ml-2">{project.link.label}</span>
-              </p>
-            </Card>
-          ))}
+          {items.map((project) => {
+            const imageUrl = getPocketbaseMedia(
+              project['@collectionName'],
+              project.id,
+              project.icon
+            )
+            return (
+              <Card as="li" key={project.name}>
+                <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                  <Image
+                    src={imageUrl}
+                    alt={project.name}
+                    className="h-8 w-8"
+                    width={50}
+                    height={50}
+                  />
+                </div>
+                <h2 className="mt-6 text-base font-semibold text-zinc-800 dark:text-zinc-100">
+                  <Card.Link href={project.url}>{project.name}</Card.Link>
+                </h2>
+                <Card.Description>{project.description}</Card.Description>
+                <p className="relative z-10 mt-6 flex text-sm font-medium text-zinc-400 transition group-hover:text-teal-500 dark:text-zinc-200">
+                  <LinkIcon className="h-6 w-6 flex-none" />
+                  <span className="ml-2">{project.url_text}</span>
+                </p>
+              </Card>
+            )
+          })}
         </ul>
       </SimpleLayout>
     </>
   )
+}
+
+export async function getStaticProps() {
+  let projects = await fetchAPI({
+    path: '/collections/projects/records?sort=-project_date',
+  })
+
+  return {
+    props: {
+      projects,
+      errorCode: null,
+    },
+  }
 }

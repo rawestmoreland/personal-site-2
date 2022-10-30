@@ -11,6 +11,9 @@ const nextConfig = {
     newNextLinkBehavior: true,
     scrollRestoration: true,
   },
+  images: {
+    domains: ['admin.richardawestmoreland.com'],
+  },
 }
 
 const withMDX = nextMDX({

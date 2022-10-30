@@ -10,6 +10,7 @@ module.exports = {
       base: ['1rem', { lineHeight: '1.75rem' }],
       lg: ['1.125rem', { lineHeight: '1.75rem' }],
       xl: ['1.25rem', { lineHeight: '2rem' }],
+      xxl: ['3rem', { lineHeight: '3.5rem' }],
       '2xl': ['1.5rem', { lineHeight: '2rem' }],
       '3xl': ['1.875rem', { lineHeight: '2.25rem' }],
       '4xl': ['2rem', { lineHeight: '2.5rem' }],
@@ -61,7 +62,7 @@ module.exports = {
           '--tw-prose-code': theme('colors.zinc.700'),
           '--tw-prose-code-bg': theme('colors.zinc.300 / 0.2'),
           '--tw-prose-pre-code': theme('colors.zinc.100'),
-          '--tw-prose-pre-bg': theme('colors.zinc.900'),
+          '--tw-prose-pre-bg': theme('colors.gray.800'),
           '--tw-prose-pre-border': 'transparent',
           '--tw-prose-th-borders': theme('colors.zinc.200'),
           '--tw-prose-td-borders': theme('colors.zinc.100'),
@@ -99,14 +100,21 @@ module.exports = {
           },
 
           // Headings
-          'h2, h3': {
+          'h1, h2, h3': {
             color: 'var(--tw-prose-headings)',
             fontWeight: theme('fontWeight.semibold'),
+          },
+          h1: {
+            fontSize: theme('fontSize.xxl')[0],
+            lineHeight: '3.5rem',
+            fontWeight: 700,
+            marginTop: theme('spacing.10'),
+            marginBottom: theme('spacing.4'),
           },
           h2: {
             fontSize: theme('fontSize.xl')[0],
             lineHeight: theme('lineHeight.7'),
-            marginTop: theme('spacing.20'),
+            marginTop: theme('spacing.10'),
             marginBottom: theme('spacing.4'),
           },
           h3: {
@@ -157,6 +165,11 @@ module.exports = {
           },
           ':is(h2, h3) code': {
             fontWeight: theme('fontWeight.bold'),
+          },
+          aside: {
+            backgroundColor: theme('colors.orange.100'),
+            padding: theme('spacing.4'),
+            borderRadius: theme('borderRadius.3xl'),
           },
 
           // Quotes
