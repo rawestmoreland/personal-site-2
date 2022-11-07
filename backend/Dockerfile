@@ -3,7 +3,7 @@
 FROM alpine:3.6
 
 # You can change Pocketbase version here
-ARG POCKETBASE_VERSION=0.5.2
+ARG POCKETBASE_VERSION=0.7.9
 
 # Install the dependencies
 RUN apk add --no-cache \
@@ -20,4 +20,4 @@ RUN unzip /tmp/pocketbase.zip -d /app
 RUN chmod +x /app/pocketbase
 
 # Start Pocketbase
-CMD [ "/app/pocketbase", "serve", "--http=0.0.0.0:5000" ]
+CMD [ "/app/pocketbase", "serve", "--http=0.0.0.0:5000", "--dir=/app/pb_data" ]
