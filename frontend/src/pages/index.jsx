@@ -1,22 +1,17 @@
-import Image from 'next/future/image'
-import Head from 'next/head'
-import Link from 'next/link'
-import clsx from 'clsx'
+import Image from 'next/future/image';
+import Head from 'next/head';
+import Link from 'next/link';
+import clsx from 'clsx';
 
-import { Button } from '@/components/Button'
-import { Card } from '@/components/Card'
-import { Container } from '@/components/Container'
-import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons'
-import image1 from '@/images/photos/image-1.jpg'
-import image2 from '@/images/photos/nextjs-logo.png'
-import image3 from '@/images/photos/new-zealand.jpg'
-import image4 from '@/images/photos/strapi.jpg'
-import image5 from '@/images/photos/tanabe.jpg'
-import { formatDate } from '@/lib/formatDate'
-import { RESUME_DOWNLOAD } from '@/lib/constants'
-import { fetchAPI } from 'util/api'
-import { getPocketbaseMedia } from 'util/media'
-import { format } from 'date-fns'
+import { Button } from '@/components/Button';
+import { Card } from '@/components/Card';
+import { Container } from '@/components/Container';
+import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons';
+import { formatDate } from '@/lib/formatDate';
+import { RESUME_DOWNLOAD } from '@/lib/constants';
+import { fetchAPI } from 'util/api';
+import { getPocketbaseMedia } from 'util/media';
+import { format } from 'date-fns';
 
 function MailIcon(props) {
   return (
@@ -38,7 +33,7 @@ function MailIcon(props) {
         className="stroke-zinc-400 dark:stroke-zinc-500"
       />
     </svg>
-  )
+  );
 }
 
 function BriefcaseIcon(props) {
@@ -61,7 +56,7 @@ function BriefcaseIcon(props) {
         className="stroke-zinc-400 dark:stroke-zinc-500"
       />
     </svg>
-  )
+  );
 }
 
 function ArrowDownIcon(props) {
@@ -74,11 +69,11 @@ function ArrowDownIcon(props) {
         strokeLinejoin="round"
       />
     </svg>
-  )
+  );
 }
 
 function Article({ article }) {
-  const { description, title, publishedAt, slug } = article.attributes
+  const { description, title, publishedAt, slug } = article.attributes;
   return (
     <Card as="article">
       <Card.Title href={`/articles/${slug}`}>{title}</Card.Title>
@@ -88,7 +83,7 @@ function Article({ article }) {
       <Card.Description>{description}</Card.Description>
       <Card.Cta>Read article</Card.Cta>
     </Card>
-  )
+  );
 }
 
 function SocialLink({ icon: Icon, ...props }) {
@@ -96,7 +91,7 @@ function SocialLink({ icon: Icon, ...props }) {
     <Link className="group -m-1 p-1" {...props}>
       <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" />
     </Link>
-  )
+  );
 }
 
 function Newsletter() {
@@ -125,7 +120,7 @@ function Newsletter() {
         </Button>
       </div>
     </form>
-  )
+  );
 }
 
 function Resume({ jobs }) {
@@ -196,41 +191,56 @@ function Resume({ jobs }) {
         <ArrowDownIcon className="h-4 w-4 stroke-zinc-400 transition group-active:stroke-zinc-600 dark:group-hover:stroke-zinc-50 dark:group-active:stroke-zinc-50" />
       </Button>
     </div>
-  )
+  );
 }
 
-function Photos() {
-  let rotations = ['rotate-2', '-rotate-2', 'rotate-2', 'rotate-2', '-rotate-2']
+function Photos({ images }) {
+  let rotations = [
+    'rotate-2',
+    '-rotate-2',
+    'rotate-2',
+    'rotate-2',
+    '-rotate-2',
+  ];
 
   return (
     <div className="mt-16 sm:mt-20">
       <div className="-my-4 flex justify-center gap-5 overflow-hidden py-4 sm:gap-8">
-        {[image1, image2, image3, image4, image5].map((image, imageIndex) => (
-          <div
-            key={image.src}
-            className={clsx(
-              'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-white sm:w-72 sm:rounded-2xl',
-              rotations[imageIndex % rotations.length],
-              { 'bg-zinc-100 dark:bg-zinc-800': !(imageIndex % 2) }
-            )}
-          >
-            <Image
-              src={image}
-              alt=""
-              sizes="(min-width: 640px) 18rem, 11rem"
-              className={clsx('absolute inset-0 h-full w-full', {
-                'object-cover': !(imageIndex % 2),
-                'object-contain': imageIndex % 2,
-              })}
-            />
-          </div>
-        ))}
+        {images
+          .sort((a, b) => a.order - b.order)
+          .map((image, imageIndex) => (
+            <div
+              key={image.id}
+              className={clsx(
+                'relative aspect-[9/10] w-44 flex-none overflow-hidden rounded-xl bg-white sm:w-72 sm:rounded-2xl',
+                rotations[imageIndex % rotations.length],
+                { 'bg-zinc-100 dark:bg-zinc-800': !(imageIndex % 2) }
+              )}
+            >
+              <Image
+                src={getPocketbaseMedia(
+                  image['@collectionName'],
+                  image.id,
+                  image.image
+                )}
+                priority
+                alt=""
+                sizes="(min-width: 640px) 18rem, 11rem"
+                className={clsx('absolute inset-0 h-full w-full', {
+                  'object-cover': !(imageIndex % 2),
+                  'object-contain': imageIndex % 2,
+                })}
+                height={329}
+                width={298}
+              />
+            </div>
+          ))}
       </div>
     </div>
-  )
+  );
 }
 
-export default function Home({ articles, jobs }) {
+export default function Home({ articles, jobs, homeImages }) {
   return (
     <>
       <Head>
@@ -270,7 +280,7 @@ export default function Home({ articles, jobs }) {
           </div>
         </div>
       </Container>
-      <Photos />
+      <Photos images={homeImages} />
       {articles && (
         <Container className="mt-24 md:mt-28">
           <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
@@ -286,20 +296,26 @@ export default function Home({ articles, jobs }) {
         </Container>
       )}
     </>
-  )
+  );
 }
 
 export async function getStaticProps() {
   const articles = await fetch('https://admin.ilearnedathing.com/api/posts', {
     headers: { 'Content-type': 'application/json' },
-  }).then((data) => data.json())
+  }).then((data) => data.json());
 
-  const jobs = await fetchAPI({ path: '/collections/jobs/records?sort=-start' })
+  const jobs = await fetchAPI({
+    path: '/collections/jobs/records?sort=-start',
+  });
+  const homeImages = await fetchAPI({
+    path: '/collections/home_images/records',
+  });
 
   return {
     props: {
       articles: articles.data,
+      homeImages: homeImages.items,
       jobs: jobs.items,
     },
-  }
+  };
 }

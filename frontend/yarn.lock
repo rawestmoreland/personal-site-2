@@ -4064,6 +4064,11 @@ pify@^3.0.0:
   resolved "https://registry.yarnpkg.com/pify/-/pify-3.0.0.tgz#e5a4acd2c101fdf3d9a4d07f0dbc4db49dd28176"
   integrity sha512-C3FsVNH1udSEX48gGX1xfvwTWfsYWj5U+8/uK15BGzIGrKoUpghX8hWZwa/OFnakBiiVNmBvemTJR5mcy7iPcg==
 
+pocketbase@^0.8.3:
+  version "0.8.3"
+  resolved "https://registry.yarnpkg.com/pocketbase/-/pocketbase-0.8.3.tgz#dc39e089f3a7131143e7a5891dbc304b91fa75de"
+  integrity sha512-B1ed44QM6iEeu007br86sDB/QGoMZXPQkujVk4p37q/WIFM0HvIDnffqTbz7oyaE6Sf8t5lNT3Mc2jVIvdxfXQ==
+
 postcss-focus-visible@^6.0.4:
   version "6.0.4"
   resolved "https://registry.yarnpkg.com/postcss-focus-visible/-/postcss-focus-visible-6.0.4.tgz#50c9ea9afa0ee657fb75635fabad25e18d76bf9e"
