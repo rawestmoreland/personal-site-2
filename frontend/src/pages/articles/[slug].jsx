@@ -3,6 +3,7 @@ import Error from 'next/error'
 import { ArticleLayout } from '@/components/ArticleLayout'
 import Markdown from '@/components/Markdown'
 import { fetchStrapi } from 'util/api'
+import qs from 'qs';
 
 export default function ArticlePage({ article }) {
   const router = useRouter()
@@ -51,9 +52,20 @@ export async function getStaticPaths() {
 export async function getStaticProps(context) {
   const { params } = context
 
+  const query = qs.stringify({
+    filters: {
+      slug: {
+        $eq: params.slug,
+      },
+    },
+    populate: '*'
+  }, {
+    encodeValuesOnly: true, // prettify URL
+  });
+
   const postData = await fetch(
-    `https://admin.ilearnedathing.com/api/posts?filter[slug][$eq]=${params.slug}&populate=*`
-  ).then((res) => res.json())
+    `https://admin.ilearnedathing.com/api/posts?${query}`
+  ).then((res) => res.json());
 
   return {
     props: {
