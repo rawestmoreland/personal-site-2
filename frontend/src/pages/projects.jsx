@@ -1,11 +1,11 @@
-import Image from 'next/future/image'
-import Head from 'next/head'
+import Image from 'next/future/image';
+import Head from 'next/head';
 
-import { Card } from '@/components/Card'
-import { SimpleLayout } from '@/components/SimpleLayout'
-import { fetchAPI } from 'util/api'
-import Error from 'next/error'
-import { getPocketbaseMedia } from 'util/media'
+import { Card } from '@/components/Card';
+import { SimpleLayout } from '@/components/SimpleLayout';
+import { fetchAPI } from 'util/api';
+import Error from 'next/error';
+import { getPocketbaseMedia } from 'util/media';
 
 function LinkIcon(props) {
   return (
@@ -15,14 +15,14 @@ function LinkIcon(props) {
         fill="currentColor"
       />
     </svg>
-  )
+  );
 }
 
 export default function Projects({ errorCode, projects }) {
   if (errorCode) {
-    return <Error statusCode={errorCode} />
+    return <Error statusCode={errorCode} />;
   }
-  const { items } = projects
+  const { items } = projects;
 
   return (
     <>
@@ -46,7 +46,7 @@ export default function Projects({ errorCode, projects }) {
               project['@collectionName'],
               project.id,
               project.icon
-            )
+            );
             return (
               <Card as="li" key={project.name}>
                 <div className="relative z-10 flex h-12 w-12 items-center justify-center rounded-full bg-white shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
@@ -67,23 +67,23 @@ export default function Projects({ errorCode, projects }) {
                   <span className="ml-2">{project.url_text}</span>
                 </p>
               </Card>
-            )
+            );
           })}
         </ul>
       </SimpleLayout>
     </>
-  )
+  );
 }
 
 export async function getStaticProps() {
   let projects = await fetchAPI({
-    path: '/collections/projects/records?sort=-project_date',
-  })
+    path: '/collections/projects/records?sort=-project_date&filter=(visible=true)',
+  });
 
   return {
     props: {
       projects,
       errorCode: null,
     },
-  }
+  };
 }
