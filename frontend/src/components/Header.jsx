@@ -147,14 +147,14 @@ function NavItem({ href, children }) {
             ? 'text-teal-500 dark:text-teal-400'
             : 'hover:text-teal-500 dark:hover:text-teal-400'
         )}
-      >
+        legacyBehavior>
         {children}
         {isActive && (
           <span className="absolute inset-x-1 -bottom-px h-px bg-gradient-to-r from-teal-500/0 via-teal-500/40 to-teal-500/0 dark:from-teal-400/0 dark:via-teal-400/40 dark:to-teal-400/0" />
         )}
       </Link>
     </li>
-  )
+  );
 }
 
 function DesktopNavigation(props) {
@@ -230,7 +230,7 @@ function Avatar({ large = false, className, ...props }) {
       aria-label="Home"
       className={clsx(className, 'pointer-events-auto')}
       {...props}
-    >
+      legacyBehavior>
       <Image
         src={avatarImage}
         alt=""
@@ -242,7 +242,7 @@ function Avatar({ large = false, className, ...props }) {
         priority
       />
     </Link>
-  )
+  );
 }
 
 export function Header() {
