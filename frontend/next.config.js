@@ -7,7 +7,7 @@ const nextConfig = {
     scrollRestoration: true,
   },
   images: {
-    domains: ['admin.richardawestmoreland.com'],
+    domains: ['admin.richardwestmoreland.com'],
   },
 };
 
