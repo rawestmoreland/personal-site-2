@@ -23,9 +23,9 @@ export default function Markdown({ content }) {
             <code className="rounded bg-gray-200 px-[3px] text-xs" {...props}>
               {children}
             </code>
-          )
+          );
         },
       }}
     />
-  )
+  );
 }
