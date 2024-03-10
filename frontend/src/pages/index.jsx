@@ -1,4 +1,4 @@
-import Image from "next/image";
+import Image from 'next/image';
 import Head from 'next/head';
 import Link from 'next/link';
 import clsx from 'clsx';
@@ -8,7 +8,7 @@ import { Card } from '@/components/Card';
 import { Container } from '@/components/Container';
 import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons';
 import { formatDate } from '@/lib/formatDate';
-import { RESUME_DOWNLOAD } from '@/lib/constants';
+import { RESUME_DOWNLOAD, RESUME_PUBLIC } from '@/lib/constants';
 import { fetchAPI } from 'util/api';
 import { getPocketbaseMedia } from 'util/media';
 import { format } from 'date-fns';
@@ -88,9 +88,9 @@ function Article({ article }) {
 
 function SocialLink({ icon: Icon, ...props }) {
   return (
-    <Link className="group -m-1 p-1" {...props} legacyBehavior>
+    <a className="group -m-1 p-1" {...props} legacyBehavior>
       <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" />
-    </Link>
+    </a>
   );
 }
 
@@ -183,7 +183,8 @@ function Resume({ jobs }) {
         ))}
       </ol>
       <Button
-        href={RESUME_DOWNLOAD}
+        href={RESUME_PUBLIC}
+        download="Resume_Mar_2024"
         variant="secondary"
         className="group mt-6 w-full"
       >
