@@ -7,10 +7,10 @@ function NavLink({ href, children }) {
     <Link
       href={href}
       className="transition hover:text-teal-500 dark:hover:text-teal-400"
-    >
+      legacyBehavior>
       {children}
     </Link>
-  )
+  );
 }
 
 export function Footer() {
