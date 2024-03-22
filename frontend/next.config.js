@@ -7,7 +7,13 @@ const nextConfig = {
     scrollRestoration: true,
   },
   images: {
-    domains: ['admin.richardwestmoreland.com'],
+    remotePatterns: [
+      {
+        protocol: 'https',
+        hostname: 'admin.richardwestmoreland.com',
+        pathname: '/**',
+      },
+    ],
   },
 };
 

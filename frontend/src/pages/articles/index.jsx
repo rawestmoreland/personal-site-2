@@ -3,13 +3,15 @@ import Head from 'next/head'
 import { Card } from '@/components/Card'
 import { SimpleLayout } from '@/components/SimpleLayout'
 import { formatDate } from '@/lib/formatDate'
-import { fetchStrapi } from 'util/api'
+import { GET_POSTS } from 'hashnode/queries/getPosts';
+import { request } from 'graphql-request';
+import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
 
 function Article({ article }) {
   return (
     <article className="md:grid md:grid-cols-4 md:items-baseline">
       <Card className="md:col-span-3">
-        <Card.Title href={`/articles/${article.slug}`}>
+        <Card.Title href={article.url} newTab>
           {article.title}
         </Card.Title>
         <Card.Eyebrow
@@ -18,7 +20,7 @@ function Article({ article }) {
           className="md:hidden"
           decorate
         >
-          {formatDate(article.date)}
+          {formatDate(article.publishedAt)}
         </Card.Eyebrow>
         <Card.Description>{article.description}</Card.Description>
         <Card.Cta>Read article</Card.Cta>
@@ -31,7 +33,7 @@ function Article({ article }) {
         {formatDate(article.publishedAt)}
       </Card.Eyebrow>
     </article>
-  )
+  );
 }
 
 export default function ArticlesIndex({ articles }) {
@@ -51,23 +53,25 @@ export default function ArticlesIndex({ articles }) {
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
             {articles.map((article) => (
-              <Article
-                key={article.attributes.slug}
-                article={article.attributes}
-              />
+              <Article key={article.id} article={article} />
             ))}
           </div>
         </div>
       </SimpleLayout>
     </>
-  )
+  );
 }
 
 export async function getStaticProps() {
-  const { data } = await fetchStrapi('/posts')
+  const hashnodeArticles = await request(
+    process.env.NEXT_PUBLIC_HASHNODE_API_URL,
+    GET_POSTS
+  );
+  const normalizedArticles = normalizeArticles(hashnodeArticles);
+
   return {
     props: {
-      articles: data,
+      articles: normalizedArticles,
     },
-  }
+  };
 }

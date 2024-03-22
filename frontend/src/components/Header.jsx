@@ -147,7 +147,6 @@ function NavItem({ href, children }) {
             ? 'text-teal-500 dark:text-teal-400'
             : 'hover:text-teal-500 dark:hover:text-teal-400'
         )}
-        legacyBehavior
       >
         {children}
         {isActive && (
@@ -231,7 +230,6 @@ function Avatar({ large = false, className, ...props }) {
       aria-label="Home"
       className={clsx(className, 'pointer-events-auto')}
       {...props}
-      legacyBehavior
     >
       <Image
         src={avatarImage}

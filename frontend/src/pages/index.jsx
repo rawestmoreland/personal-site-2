@@ -8,10 +8,13 @@ import { Card } from '@/components/Card';
 import { Container } from '@/components/Container';
 import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons';
 import { formatDate } from '@/lib/formatDate';
-import { RESUME_DOWNLOAD, RESUME_PUBLIC } from '@/lib/constants';
+import { RESUME_PUBLIC } from '@/lib/constants';
 import { fetchAPI } from 'util/api';
 import { getPocketbaseMedia } from 'util/media';
 import { format } from 'date-fns';
+import { request } from 'graphql-request';
+import { GET_POSTS } from 'hashnode/queries/getPosts';
+import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
 
 function MailIcon(props) {
   return (
@@ -72,11 +75,13 @@ function ArrowDownIcon(props) {
   );
 }
 
-function Article({ article }) {
-  const { description, title, publishedAt, slug } = article.attributes;
+function HashnodeArticle({ article }) {
+  const { title, description, publishedAt, url } = article;
   return (
     <Card as="article">
-      <Card.Title href={`/articles/${slug}`}>{title}</Card.Title>
+      <Card.Title href={url} newTab>
+        {title}
+      </Card.Title>
       <Card.Eyebrow as="time" dateTime={publishedAt} decorate>
         {formatDate(publishedAt)}
       </Card.Eyebrow>
@@ -241,7 +246,7 @@ function Photos({ images }) {
   );
 }
 
-export default function Home({ articles, jobs, homeImages }) {
+export default function Home({ hashnodeArticles, jobs, homeImages }) {
   return (
     <>
       <Head>
@@ -283,13 +288,14 @@ export default function Home({ articles, jobs, homeImages }) {
         </div>
       </Container>
       <Photos images={homeImages} />
-      {articles && (
+      {hashnodeArticles && (
         <Container className="mt-24 md:mt-28">
           <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
             <div className="flex flex-col gap-16">
-              {articles.map((article) => (
-                <Article key={`article-${article.id}`} article={article} />
-              ))}
+              {hashnodeArticles &&
+                hashnodeArticles.map((article) => (
+                  <HashnodeArticle key={article.id} article={article} />
+                ))}
             </div>
             <div className="space-y-10 lg:pl-16 xl:pl-24">
               <Resume jobs={jobs} />
@@ -302,9 +308,12 @@ export default function Home({ articles, jobs, homeImages }) {
 }
 
 export async function getStaticProps() {
-  const articles = await fetch('https://admin.ilearnedathing.com/api/posts', {
-    headers: { 'Content-type': 'application/json' },
-  }).then((data) => data.json());
+  const hashnodeArticles = await request(
+    process.env.NEXT_PUBLIC_HASHNODE_API_URL,
+    GET_POSTS
+  );
+
+  const normalizedArticles = normalizeArticles(hashnodeArticles);
 
   const jobs = await fetchAPI({
     path: '/collections/jobs/records?sort=-start',
@@ -315,7 +324,7 @@ export async function getStaticProps() {
 
   return {
     props: {
-      articles: articles.data,
+      hashnodeArticles: normalizedArticles,
       homeImages: homeImages.items,
       jobs: jobs.items,
     },
