@@ -1,5 +1,6 @@
 export function normalizeArticles(articles) {
-  return articles.publication.posts.edges.map(({ node }) => {
+  const { hasNextPage, endCursor } = articles.publication.posts.pageInfo;
+  const normalized = articles.publication.posts.edges.map(({ node }) => {
     const { id, title, url, brief, publishedAt } = node;
 
     return {
@@ -10,4 +11,10 @@ export function normalizeArticles(articles) {
       publishedAt,
     };
   });
+
+  return {
+    hasNextPage,
+    endCursor,
+    articles: normalized,
+  };
 }

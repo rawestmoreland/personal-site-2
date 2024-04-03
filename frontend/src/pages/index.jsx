@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { request } from 'graphql-request';
 import { GET_POSTS } from 'hashnode/queries/getPosts';
 import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
+import { useEffect, useState } from 'react';
 
 function MailIcon(props) {
   return (
@@ -93,7 +94,7 @@ function HashnodeArticle({ article }) {
 
 function SocialLink({ icon: Icon, ...props }) {
   return (
-    <a className="group -m-1 p-1" {...props} legacyBehavior>
+    <a className="group -m-1 p-1" {...props}>
       <Icon className="h-6 w-6 fill-zinc-500 transition group-hover:fill-zinc-600 dark:fill-zinc-400 dark:group-hover:fill-zinc-300" />
     </a>
   );
@@ -247,6 +248,39 @@ function Photos({ images }) {
 }
 
 export default function Home({ hashnodeArticles, jobs, homeImages }) {
+  const [articles, setArticles] = useState(hashnodeArticles);
+  const [fetchedArticles, setFetchedArticles] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const fetchMoreArticles = async () => {
+    setIsLoading(true);
+    const newArticles = await request(
+      process.env.NEXT_PUBLIC_HASHNODE_API_URL,
+      GET_POSTS,
+      {
+        limit: 5,
+        after: articles.endCursor,
+      }
+    );
+
+    const normalizedArticles = normalizeArticles(newArticles);
+
+    setFetchedArticles(normalizedArticles);
+
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    if (!fetchedArticles) return;
+
+    setArticles((prev) => ({
+      hasNextPage: fetchedArticles.hasNextPage,
+      endCursor: fetchedArticles.endCursor,
+      articles: [...prev.articles, ...fetchedArticles.articles],
+    }));
+    setFetchedArticles(null);
+  }, [fetchedArticles]);
+
   return (
     <>
       <Head>
@@ -288,14 +322,23 @@ export default function Home({ hashnodeArticles, jobs, homeImages }) {
         </div>
       </Container>
       <Photos images={homeImages} />
-      {hashnodeArticles && (
+      {articles.articles && (
         <Container className="mt-24 md:mt-28">
           <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
             <div className="flex flex-col gap-16">
-              {hashnodeArticles &&
-                hashnodeArticles.map((article) => (
-                  <HashnodeArticle key={article.id} article={article} />
-                ))}
+              <>
+                {articles.articles &&
+                  articles.articles.map((article) => (
+                    <HashnodeArticle key={article.id} article={article} />
+                  ))}
+                {articles.hasNextPage && (
+                  <div>
+                    <Button disabled={isLoading} onClick={fetchMoreArticles}>
+                      Load more
+                    </Button>
+                  </div>
+                )}
+              </>
             </div>
             <div className="space-y-10 lg:pl-16 xl:pl-24">
               <Resume jobs={jobs} />
@@ -310,7 +353,10 @@ export default function Home({ hashnodeArticles, jobs, homeImages }) {
 export async function getStaticProps() {
   const hashnodeArticles = await request(
     process.env.NEXT_PUBLIC_HASHNODE_API_URL,
-    GET_POSTS
+    GET_POSTS,
+    {
+      limit: 5,
+    }
   );
 
   const normalizedArticles = normalizeArticles(hashnodeArticles);
