@@ -1,8 +1,8 @@
-import Head from 'next/head'
+import Head from 'next/head';
 
-import { Card } from '@/components/Card'
-import { SimpleLayout } from '@/components/SimpleLayout'
-import { formatDate } from '@/lib/formatDate'
+import { Card } from '@/components/Card';
+import { SimpleLayout } from '@/components/SimpleLayout';
+import { formatDate } from '@/lib/formatDate';
 import { GET_POSTS } from 'hashnode/queries/getPosts';
 import { request } from 'graphql-request';
 import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
@@ -52,7 +52,7 @@ export default function ArticlesIndex({ articles }) {
       >
         <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
           <div className="flex max-w-3xl flex-col space-y-16">
-            {articles.map((article) => (
+            {articles.articles.map((article) => (
               <Article key={article.id} article={article} />
             ))}
           </div>
