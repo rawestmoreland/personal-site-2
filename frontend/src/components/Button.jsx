@@ -16,7 +16,7 @@ export function Button({ variant = 'primary', className, href, ...props }) {
   );
 
   return href ? (
-    <a href={href} className={className} {...props} legacyBehavior />
+    <a href={href} className={className} {...props} />
   ) : (
     <button className={className} {...props} />
   );
