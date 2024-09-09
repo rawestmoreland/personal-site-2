@@ -1,5 +1,6 @@
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
+import Script from 'next/script';
 
 import '@/styles/tailwind.css';
 
@@ -22,6 +23,11 @@ export default async function RootLayout({ children }) {
           <main>{children}</main>
           <Footer />
         </div>
+        <Script
+          async
+          src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3399938065938082"
+          crossOrigin="anonymous"
+        ></Script>
       </body>
     </html>
   );
