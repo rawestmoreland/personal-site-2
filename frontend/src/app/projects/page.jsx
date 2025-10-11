@@ -55,7 +55,7 @@ export default async function Projects() {
                 <Image
                   src={imageUrl}
                   alt={project.name}
-                  className="h-8 w-8"
+                  className="h-8 w-8 rounded-full"
                   width={50}
                   height={50}
                 />
