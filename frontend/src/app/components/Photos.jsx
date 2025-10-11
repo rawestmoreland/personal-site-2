@@ -32,7 +32,7 @@ export function Photos({ images }) {
                   image.image
                 )}
                 priority
-                alt=""
+                alt={image.alt}
                 sizes="(min-width: 640px) 18rem, 11rem"
                 className={clsx('absolute inset-0 h-full w-full', {
                   'object-cover': !(imageIndex % 2),
