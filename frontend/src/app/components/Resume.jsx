@@ -14,56 +14,65 @@ export function Resume({ jobs }) {
         <span className="ml-3">Work</span>
       </h2>
       <ol className="mt-6 space-y-4">
-        {jobs?.map((role, roleIndex) => (
-          <li key={roleIndex} className="flex gap-4">
-            <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
-              <Image
-                src={getPocketbaseMedia(
-                  role['@collectionName'],
-                  role.id,
-                  role.logo
-                )}
-                alt=""
-                className="h-7 w-7"
-                unoptimized
-                height={60}
-                width={60}
-              />
-            </div>
-            <dl className="flex flex-auto flex-wrap gap-x-2">
-              <dt className="sr-only">Company</dt>
-              <dd className="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">
-                {role.company}
-              </dd>
-              <dt className="sr-only">Role</dt>
-              <dd className="text-xs text-zinc-500 dark:text-zinc-400">
-                {role.title}
-              </dd>
-              <dt className="sr-only">Date</dt>
-              <dd
-                className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
-                aria-label={`${format(
-                  new Date(role.start),
-                  'LLL yyyy'
-                )} until ${
-                  role.currently_employed
-                    ? 'present'
-                    : format(new Date(role.end), 'LLL yyyy')
-                }`}
-              >
-                <time dateTime={role.start}>
-                  {format(new Date(role.start), 'LLL yyyy')}
-                </time>{' '}
-                <span aria-hidden="true">—</span>{' '}
-                <time dateTime={role.end}>
-                  {role.currently_employed
-                    ? 'present'
-                    : format(new Date(role.end), 'LLL yyyy')}
-                </time>
-              </dd>
-            </dl>
-          </li>
-        ))}
+        {jobs
+          ?.sort((a, b) => {
+            // If one job is currently employed and the other isn't, prioritize the current job
+            if (a.currently_employed && !b.currently_employed) return -1;
+            if (!a.currently_employed && b.currently_employed) return 1;
+
+            // Otherwise, sort by start date (most recent first)
+            return new Date(b.start) - new Date(a.start);
+          })
+          .map((role, roleIndex) => (
+            <li key={roleIndex} className="flex gap-4">
+              <div className="relative mt-1 flex h-10 w-10 flex-none items-center justify-center rounded-full shadow-md shadow-zinc-800/5 ring-1 ring-zinc-900/5 dark:border dark:border-zinc-700/50 dark:bg-zinc-800 dark:ring-0">
+                <Image
+                  src={getPocketbaseMedia(
+                    role['@collectionName'],
+                    role.id,
+                    role.logo
+                  )}
+                  alt=""
+                  className="h-7 w-7"
+                  unoptimized
+                  height={60}
+                  width={60}
+                />
+              </div>
+              <dl className="flex flex-auto flex-wrap gap-x-2">
+                <dt className="sr-only">Company</dt>
+                <dd className="w-full flex-none text-sm font-medium text-zinc-900 dark:text-zinc-100">
+                  {role.company}
+                </dd>
+                <dt className="sr-only">Role</dt>
+                <dd className="text-xs text-zinc-500 dark:text-zinc-400">
+                  {role.title}
+                </dd>
+                <dt className="sr-only">Date</dt>
+                <dd
+                  className="ml-auto text-xs text-zinc-400 dark:text-zinc-500"
+                  aria-label={`${format(
+                    new Date(role.start),
+                    'LLL yyyy'
+                  )} until ${
+                    role.currently_employed
+                      ? 'present'
+                      : format(new Date(role.end), 'LLL yyyy')
+                  }`}
+                >
+                  <time dateTime={role.start}>
+                    {format(new Date(role.start), 'LLL yyyy')}
+                  </time>{' '}
+                  <span aria-hidden="true">—</span>{' '}
+                  <time dateTime={role.end}>
+                    {role.currently_employed
+                      ? 'present'
+                      : format(new Date(role.end), 'LLL yyyy')}
+                  </time>
+                </dd>
+              </dl>
+            </li>
+          ))}
       </ol>
       <Button
         href={RESUME_PUBLIC}
