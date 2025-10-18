@@ -76,7 +76,7 @@ export function Resume({ jobs }) {
       </ol>
       <Button
         href={RESUME_PUBLIC}
-        download="Resume_Mar_2024"
+        download="resume_richard_westmoreland"
         variant="secondary"
         className="group mt-6 w-full"
       >
