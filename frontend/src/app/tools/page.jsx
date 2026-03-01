@@ -57,9 +57,7 @@ export default async function Tools() {
               title={category.name}
             >
               {tools.items
-                .filter(
-                  (tool) => tool['@expand'].category.name === category.name
-                )
+                .filter((tool) => tool.expand?.category?.name === category.name)
                 .map((tool) => {
                   return (
                     <Tool key={`tool-${tool.id}`} title={tool.name}>
