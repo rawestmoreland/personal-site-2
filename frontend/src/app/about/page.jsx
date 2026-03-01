@@ -56,7 +56,7 @@ export default async function About() {
           <div className="max-w-xs px-2.5 lg:max-w-none">
             <Image
               src={getPocketbaseMedia(
-                content['@collectionName'],
+                content.collectionName,
                 content.id,
                 content.image
               )}

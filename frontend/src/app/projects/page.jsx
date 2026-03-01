@@ -45,7 +45,7 @@ export default async function Projects() {
       >
         {items.map((project) => {
           const imageUrl = getPocketbaseMedia(
-            project['@collectionName'],
+            project.collectionName,
             project.id,
             project.icon
           );

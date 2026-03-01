@@ -27,7 +27,7 @@ export function Photos({ images }) {
             >
               <Image
                 src={getPocketbaseMedia(
-                  image['@collectionName'],
+                  image.collectionName,
                   image.id,
                   image.image
                 )}
