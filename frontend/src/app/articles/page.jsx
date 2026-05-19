@@ -1,9 +1,7 @@
 import { Card } from '@/components/Card';
 import { SimpleLayout } from '@/components/SimpleLayout';
 import { formatDate } from '@/lib/formatDate';
-import { GET_POSTS } from 'hashnode/queries/getPosts';
-import { request } from 'graphql-request';
-import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
+import { getAllPosts } from 'util/blog';
 
 export const metadata = {
   title: 'Articles - Richard Westmoreland',
@@ -15,7 +13,7 @@ function Article({ article }) {
   return (
     <article className="md:grid md:grid-cols-4 md:items-baseline">
       <Card className="md:col-span-3">
-        <Card.Title href={article.url} newTab>
+        <Card.Title href={`/articles/${article.slug}`}>
           {article.title}
         </Card.Title>
         <Card.Eyebrow
@@ -40,16 +38,8 @@ function Article({ article }) {
   );
 }
 
-const getArticles = async () => {
-  const hashnodeArticles = await request(
-    process.env.NEXT_PUBLIC_HASHNODE_API_URL,
-    GET_POSTS
-  );
-  return normalizeArticles(hashnodeArticles);
-};
-
 export default async function ArticlesIndex() {
-  const articles = await getArticles();
+  const articles = await getAllPosts();
 
   return (
     <SimpleLayout
@@ -58,7 +48,7 @@ export default async function ArticlesIndex() {
     >
       <div className="md:border-l md:border-zinc-100 md:pl-6 md:dark:border-zinc-700/40">
         <div className="flex max-w-3xl flex-col space-y-16">
-          {articles.articles.map((article) => (
+          {articles.map((article) => (
             <Article key={article.id} article={article} />
           ))}
         </div>

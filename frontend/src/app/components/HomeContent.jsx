@@ -1,5 +1,6 @@
 'use client';
 
+import { useState } from 'react';
 import { Container } from '@/components/Container';
 import { HashnodeArticle } from './HashnodeArticle';
 import { Resume } from './Resume';
@@ -7,44 +8,14 @@ import { SocialLink } from './SocialLink';
 import { Photos } from './Photos';
 import { GitHubIcon, LinkedInIcon } from '@/components/SocialIcons';
 import { Button } from '@/components/Button';
-import { normalizeArticles } from 'hashnode/utils/normalizeArticles';
-import { useState, useEffect } from 'react';
-import { request } from 'graphql-request';
-import { GET_POSTS } from 'hashnode/queries/getPosts';
 
-export function HomeContent({ hashnodeArticles, jobs, homeImages }) {
-  const [articles, setArticles] = useState(hashnodeArticles);
-  const [fetchedArticles, setFetchedArticles] = useState(null);
-  const [isLoading, setIsLoading] = useState(false);
+const PAGE_SIZE = 5;
 
-  const fetchMoreArticles = async () => {
-    setIsLoading(true);
-    const newArticles = await request(
-      process.env.NEXT_PUBLIC_HASHNODE_API_URL,
-      GET_POSTS,
-      {
-        limit: 5,
-        after: articles.endCursor,
-      }
-    );
+export function HomeContent({ articles, jobs, homeImages }) {
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
 
-    const normalizedArticles = normalizeArticles(newArticles);
-
-    setFetchedArticles(normalizedArticles);
-
-    setIsLoading(false);
-  };
-
-  useEffect(() => {
-    if (!fetchedArticles) return;
-
-    setArticles((prev) => ({
-      hasNextPage: fetchedArticles.hasNextPage,
-      endCursor: fetchedArticles.endCursor,
-      articles: [...prev.articles, ...fetchedArticles.articles],
-    }));
-    setFetchedArticles(null);
-  }, [fetchedArticles]);
+  const visibleArticles = articles.slice(0, visibleCount);
+  const hasMore = visibleCount < articles.length;
 
   return (
     <>
@@ -75,23 +46,20 @@ export function HomeContent({ hashnodeArticles, jobs, homeImages }) {
         </div>
       </Container>
       <Photos images={homeImages} />
-      {articles.articles && (
+      {articles.length > 0 && (
         <Container className="mt-24 md:mt-28">
           <div className="mx-auto grid max-w-xl grid-cols-1 gap-y-20 lg:max-w-none lg:grid-cols-2">
             <div className="flex flex-col gap-16">
-              <>
-                {articles.articles &&
-                  articles.articles.map((article) => (
-                    <HashnodeArticle key={article.id} article={article} />
-                  ))}
-                {articles.hasNextPage && (
-                  <div>
-                    <Button disabled={isLoading} onClick={fetchMoreArticles}>
-                      Load more
-                    </Button>
-                  </div>
-                )}
-              </>
+              {visibleArticles.map((article) => (
+                <HashnodeArticle key={article.id} article={article} />
+              ))}
+              {hasMore && (
+                <div>
+                  <Button onClick={() => setVisibleCount((c) => c + PAGE_SIZE)}>
+                    Load more
+                  </Button>
+                </div>
+              )}
             </div>
             <div className="space-y-10 lg:pl-16 xl:pl-24">
               <Resume jobs={jobs} />
