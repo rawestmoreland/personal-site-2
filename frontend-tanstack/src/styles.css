@@ -1,0 +1,256 @@
+@import 'tailwindcss';
+@plugin '@tailwindcss/typography';
+
+/*
+  Palette comes from the cockpit and the chart table:
+  chart paper, flight-deck navy, and the magenta used for airspace on sectional charts.
+*/
+:root {
+  --paper: #e4eaec;
+  --paper-raised: #eef2f3;
+  --ink: #0d1a2b;
+  --ink-soft: #46566a;
+  --rule: #b9c4ca;
+  --signal: #b81f63;
+  --rack: #0d1a2b;
+  --rack-edge: #1d2d44;
+  --strip: #f6f8f6;
+  --strip-ink: #0d1a2b;
+  --strip-line: #c3ccd1;
+  --strip-muted: #5b6b7c;
+  --landed: #b5bfc5;
+  --landed-ink: #3b4a5b;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root {
+    --paper: #0a121d;
+    --paper-raised: #0f1a2a;
+    --ink: #e8edf1;
+    --ink-soft: #9aabbd;
+    --rule: #223249;
+    --signal: #ff5f9e;
+    --rack: #060b13;
+    --rack-edge: #1a2a41;
+    --strip: #e9eeea;
+    --strip-ink: #0d1a2b;
+    --strip-line: #b2bdc4;
+    --strip-muted: #4f5f70;
+    --landed: #6f7d8a;
+    --landed-ink: #1c2a3a;
+  }
+}
+
+@theme inline {
+  --font-display: 'Archivo', ui-sans-serif, system-ui, sans-serif;
+  --font-sans: 'B612', ui-sans-serif, system-ui, sans-serif;
+  --font-data: 'B612 Mono', ui-monospace, monospace;
+  --color-paper: var(--paper);
+  --color-paper-raised: var(--paper-raised);
+  --color-ink: var(--ink);
+  --color-ink-soft: var(--ink-soft);
+  --color-rule: var(--rule);
+  --color-signal: var(--signal);
+  --color-rack: var(--rack);
+  --color-rack-edge: var(--rack-edge);
+  --color-strip: var(--strip);
+  --color-strip-ink: var(--strip-ink);
+  --color-strip-line: var(--strip-line);
+  --color-strip-muted: var(--strip-muted);
+  --color-landed: var(--landed);
+  --color-landed-ink: var(--landed-ink);
+}
+
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 5rem;
+}
+
+body {
+  margin: 0;
+  background: var(--paper);
+  color: var(--ink);
+  font-family: var(--font-sans);
+  font-size: 1rem;
+  line-height: 1.7;
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: var(--signal);
+  color: #fff;
+}
+
+:focus-visible {
+  outline: 2px solid var(--signal);
+  outline-offset: 3px;
+}
+
+.wrap {
+  width: min(72rem, 100% - 2.5rem);
+  margin-inline: auto;
+}
+
+/* Archivo at full width gives the heading the feel of lettering on a fuselage. */
+.display {
+  font-family: var(--font-display);
+  font-stretch: 125%;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  line-height: 0.95;
+}
+
+.heading {
+  font-family: var(--font-display);
+  font-stretch: 112%;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+  line-height: 1.05;
+  font-size: clamp(1.75rem, 3.6vw, 2.5rem);
+}
+
+.data {
+  font-family: var(--font-data);
+  font-size: 0.8125rem;
+  letter-spacing: 0;
+}
+
+/* Flight strips */
+.strip {
+  --tab: var(--signal);
+  background: var(--strip);
+  color: var(--strip-ink);
+  border-radius: 2px;
+  display: grid;
+  grid-template-columns: 0.6rem 1fr;
+  transition:
+    transform 160ms ease-out,
+    box-shadow 160ms ease-out;
+}
+
+.strip[data-state='landed'] {
+  --tab: var(--landed-ink);
+  background: var(--landed);
+  color: var(--landed-ink);
+}
+
+a.strip:hover,
+a.strip:focus-visible {
+  transform: translateX(0.5rem);
+  box-shadow: -0.5rem 0 0 0 var(--rack-edge);
+}
+
+.strip-tab {
+  background: var(--tab);
+  border-radius: 2px 0 0 2px;
+}
+
+.strip-body {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+}
+
+.strip-main {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 3.5rem 1fr;
+  gap: 1rem;
+  align-items: center;
+  padding: 1rem;
+}
+
+.strip-cell {
+  padding: 0.5rem 1rem 0.75rem;
+  border-top: 1px solid var(--strip-line);
+  min-width: 0;
+}
+
+.strip-cell + .strip-cell {
+  border-left: 1px solid var(--strip-line);
+}
+
+.strip-label {
+  display: block;
+  font-size: 0.6875rem;
+  line-height: 1.4;
+  color: var(--strip-muted);
+}
+
+.strip[data-state='landed'] .strip-label {
+  color: var(--landed-ink);
+}
+
+@media (min-width: 52rem) {
+  .strip-body {
+    grid-template-columns: minmax(0, 1fr) 7.5rem 7.5rem 11rem;
+  }
+  .strip-main {
+    grid-column: auto;
+    padding: 0.875rem 1.25rem;
+  }
+  .strip-cell {
+    border-top: 0;
+    border-left: 1px solid var(--strip-line);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 0.5rem 1rem;
+  }
+}
+
+/* The one orchestrated moment: strips are loaded into the rack, top to bottom. */
+@keyframes load-strip {
+  from {
+    opacity: 0;
+    transform: translateX(2.5rem);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+.load-strip {
+  animation: load-strip 520ms cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+  .load-strip {
+    animation: none;
+  }
+  .strip {
+    transition: none;
+  }
+}
+
+/* Story text */
+.story p {
+  margin: 0 0 1.25rem;
+  max-width: 62ch;
+}
+
+.story a {
+  color: var(--signal);
+  text-decoration: underline;
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+}
+
+/* Ledger */
+.ledger-row {
+  display: grid;
+  gap: 0.25rem 1.5rem;
+  grid-template-columns: 1fr;
+  padding-block: 1.125rem;
+  border-top: 1px solid var(--rule);
+}
+
+@media (min-width: 52rem) {
+  .ledger-row {
+    grid-template-columns: 12rem minmax(0, 1fr) 6rem minmax(12rem, 1.2fr);
+    align-items: center;
+  }
+}
